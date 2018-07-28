@@ -84,9 +84,9 @@ class Visualizer {
       let targetQuat = this.cubes[cubeId].targetQuat;
 
       if (currentIndex < Math.floor(totalCubes / 2)) {
-        cubeObj.position.x = -150;
+        cubeObj.position.x = -200;
       } else {
-        cubeObj.position.x = 150;
+        cubeObj.position.x = 200;
       }
 
       if (targetQuat != null) {
