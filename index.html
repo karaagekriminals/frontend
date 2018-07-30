@@ -6,6 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Karaage Frontend</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
@@ -15,6 +16,7 @@
     <script src="lib/js/renderers/Projector.js"></script>
     <script src="lib/js/renderers/CanvasRenderer.js"></script>
     <script src="lib/js/libs/stats.min.js"></script>
+    <script src="lib/js/libs/tween.min.js"></script>
 
     <script src="js/messagereceiver.js"></script>
     <script src="js/visualizer.js"></script>
@@ -23,13 +25,40 @@
         let messageReceiver = new MessageReceiver();
         let visualizer = new Visualizer();
 
-        visualizer.addCube("98072d27a984");
+        visualizer.addCube("98072d3b1a82");
         visualizer.addCube("c4be8471a302");
 
         messageReceiver.addMessageReceivedListener(() => {
-            visualizer.setTargetQuat("98072d27a984", messageReceiver.lastReceivedQuat["98072d27a984"]);
+            visualizer.setTargetQuat("98072d3b1a82", messageReceiver.lastReceivedQuat["98072d3b1a82"]);
             visualizer.setTargetQuat("c4be8471a302", messageReceiver.lastReceivedQuat["c4be8471a302"]);
-            // console.log(messageReceiver.lastReceivedQuat);
+
+            let highness = null;
+            if (messageReceiver.lastReceivedAccel["98072d3b1a82"] != null) {
+                highness = messageReceiver.lastReceivedAccel["98072d3b1a82"].x.G * 280;
+            }
+            if (messageReceiver.lastReceivedAccel["c4be8471a302"] != null) {
+                highness = Math.max(highness, messageReceiver.lastReceivedAccel["c4be8471a302"].x.G * 280);
+            }
+
+            if (highness != null) {
+                visualizer.setHighness(highness);
+            }
+
+            if (messageReceiver.lastReceivedAccel["98072d3b1a82"] != null) {
+                let accel = messageReceiver.lastReceivedAccel["98072d3b1a82"];
+                if (Math.abs(accel.x.G) > 1.2 || Math.abs(accel.y.G) > 1.2 || Math.abs(accel.z.G) > 1.2) {
+                    visualizer.generateRipple(accel.x.G * 40, accel.y.G * 40, accel.z.G * 40, colour = "blue");
+                    messageReceiver.lastReceivedAccel["98072d3b1a82"] = null;
+                }
+            }
+
+            if (messageReceiver.lastReceivedAccel["c4be8471a302"] != null) {
+                let accel = messageReceiver.lastReceivedAccel["c4be8471a302"];
+                if (Math.abs(accel.x.G) > 1.2 || Math.abs(accel.y.G) > 1.2 || Math.abs(accel.z.G) > 1.2) {
+                    visualizer.generateRipple(accel.x.G * 50, accel.y.G * 50, accel.z.G * 50, colour = "red");
+                    messageReceiver.lastReceivedAccel["c4be8471a302"] = null;
+                }
+            }
         });
     </script>
 </body>
